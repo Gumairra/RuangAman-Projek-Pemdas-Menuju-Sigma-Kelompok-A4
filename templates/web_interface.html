@@ -9,10 +9,48 @@
     <style>
     </style>
     <link rel="stylesheet" href="web.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
 </head>
 <body>
-    <div class="connection-status" id="connectionStatus">● Terhubung</div>
+    <div class="container">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="topbar-left">
+        <h3>Dashboard</h3>
+        <p>Hi there, great to see you again</p>
+        </div>
+
+        <div class="topbar-right">
+        <!-- Connection Status -->
+        <div class="connection-status connected" id="connectionStatus">
+            ● Terhubung
+        </div>
+
+        <!-- Notifikasi -->
+        <div class="notification">
+            🔔
+            <span class="dot"></span>
+        </div>
+
+        <!-- Avatar -->
+        <div class="user-avatar">
+            <img src="img/hikma.jpg" alt="User">
+        </div>
+        </div>
+    </div>
+
+    <header>
+        <h1>RuangAman</h1>
+        <p>Sistem Manajemen Suhu & Asap Ruangan</p>
+        <div class="status-badge" id="statusBadge">Normal</div>
+        <div style="margin-top: 15px; color: #666;">
+        <small id="lastUpdate">Memuat data...</small>
+        </div>
+    </header>
+
+    </div>
     
     <div class="container">
         <header>
@@ -56,23 +94,23 @@
                 <h2>⚙️ Kontrol Sistem</h2>
                 
                 <div class="control-group">
-                    <label>
-                        Mode Otomatis
-                        <label class="switch" style="float: right;">
-                            <input type="checkbox" id="autoMode" checked onchange="toggleMode()">
-                            <span class="slider"></span>
-                        </label>
+                <div class="row">
+                    <span>Mode Otomatis</span>
+                    <label class="switch">
+                    <input type="checkbox" id="autoMode" checked onchange="toggleMode()">
+                    <span class="slider"></span>
                     </label>
+                </div>
                 </div>
 
                 <div class="control-group" id="manualControls" style="display: none;">
-                    <label>
-                        Kipas Manual
-                        <label class="switch" style="float: right;">
-                            <input type="checkbox" id="fanManual" onchange="toggleFan()">
-                            <span class="slider"></span>
-                        </label>
+                <div class="row">
+                    <span>Kipas Manual</span>
+                    <label class="switch">
+                    <input type="checkbox" id="fanManual" onchange="toggleFan()">
+                    <span class="slider"></span>
                     </label>
+                </div>
                 </div>
 
                 <div class="control-group">
@@ -105,50 +143,55 @@
 
     <div class="footer">
     <div class="container-footer">
-        <h2 class="title">Tim Projek</h2>
-        <p class="subtitle">Kelompok 3 - Pemrograman Dasar 2024</p>
+        <h2 class="title">Team Project</h2>
+        <p class="subtitle">Kelompok A4 - Pemrograman Dasar 2024</p>
 
         <div class="team">
         <div class="name-card">
             <div class="avatar">
-                <img src="" alt="Reza">
+                <img src="img/reza.jpg" alt="Reza">
             </div>
-            <p>Reza</p>
+            <p>Reza Maulana</p>
+            <p>152024012</p>
         </div>
 
         <div class="name-card">
             <div class="avatar">
-                <img src="" alt="Joddy">
+                <img src="img/joddy.jpg" alt="Joddy">
             </div>
-            <p>Joddy</p>
+            <p>Joddy Lukmanul</p>
+            <p>152024117</p>
         </div>
 
         <div class="name-card">
             <div class="avatar">
-                <img src="" alt="Fadhlan">
+                <img src="img/fadhlan.jpg" alt="Fadhlan">
             </div>
-            <p>Fadhlan</p>
+            <p>Fadhlan Baihaki</p>
+            <p>152024021</p>
         </div>
 
         <div class="name-card">
             <div class="avatar">
                 <img src="img/fakhri.jpg" alt="Fakhri">
             </div>
-            <p>Fakhri</p>
+            <p>Fakhri Nazhirul</p>
+            <p>152024039</p>
         </div>
 
         <div class="name-card">
             <div class="avatar">
                 <img src="img/gumairra.jpg" alt="Gumairra">
             </div>
-            <p>Gumairra</p>
+            <p>R. Gumairra</p>
+            <p>152024045</p>
         </div>
 
         <div class="name-card">
             <div class="avatar">
                 <img src="img/hikma.jpg" alt="Hikma">
             </div>
-            <p>Hikma</p>
+            <p> Nur Hikma M.</p>
             <p>152024098</p>
         </div>
         </div>

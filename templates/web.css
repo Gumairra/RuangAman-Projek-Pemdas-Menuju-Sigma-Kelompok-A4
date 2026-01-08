@@ -18,6 +18,64 @@ body {
     margin: 0 auto;
   
 }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.topbar-left h3 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  color: #fafcff;
+}
+
+.topbar-left p {
+  margin: 4px 0 0;
+  font-size: 20px;
+  color: #fbbf24;
+}
+
+/* kanan */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* notifikasi */
+.notification {
+  position: relative;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.notification .dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+}
+
+/* avatar */
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 header {
     background: rgba(255, 255, 255, 0.95);
@@ -76,6 +134,7 @@ p {
 
 .name-card {
   text-align: center;
+  font-family: 'Poppins', sans-serif;
 }
 
 .avatar {
@@ -159,7 +218,7 @@ p {
 }
 
 .control-group {
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .control-group label {
@@ -167,6 +226,14 @@ p {
     margin-bottom: 10px;
     font-weight: bold;
     color: #333;
+}
+
+.row {
+  display: flex;
+  font-weight: bold;
+  color: #333;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .switch {
