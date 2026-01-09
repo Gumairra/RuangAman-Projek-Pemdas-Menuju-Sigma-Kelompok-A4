@@ -14,7 +14,7 @@ data_sensor = {
 def index ():
     return render_template('web-interface.html', sensor=data_sensor)
 
-@app.route('update', methods=['POST'])
+@app.route('/update', methods=['POST'])
 def update_sensor():
     global data_sensor
     try:
