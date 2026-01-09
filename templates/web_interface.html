@@ -16,32 +16,6 @@
 <body>
     <div class="container">
 
-    <!-- Top Bar -->
-    <div class="topbar">
-        <div class="topbar-left">
-        <h3>Dashboard</h3>
-        <p>Hi there, great to see you again</p>
-        </div>
-
-        <div class="topbar-right">
-        <!-- Connection Status -->
-        <div class="connection-status connected" id="connectionStatus">
-            ● Terhubung
-        </div>
-
-        <!-- Notifikasi -->
-        <div class="notification">
-            🔔
-            <span class="dot"></span>
-        </div>
-
-        <!-- Avatar -->
-        <div class="user-avatar">
-            <img src="img/hikma.jpg" alt="User">
-        </div>
-        </div>
-    </div>
-
     <header>
         <h1>RuangAman</h1>
         <p>Sistem Manajemen Suhu & Asap Ruangan</p>
@@ -77,18 +51,19 @@
                 </div>
             </div>
 
-            <!-- Card Kelembaban -->
+            <!-- Card Asap -->
             <div class="card">
-                <h2>💧 Kelembaban</h2>
+                <h2>🔥 Asap</h2>
                 <div class="sensor-display">
-                    <div class="sensor-value" id="humidity">--</div>
-                    <div class="sensor-unit">%</div>
+                    <div class="sensor-value" id="smoke">--</div>
+                    <div class="sensor-unit">PPM</div>
                 </div>
                 <div class="info-item" style="margin-top: 20px;">
-                    <div class="info-label">Status Kelembaban</div>
-                    <div class="info-value" id="humidityStatus">Normal</div>
+                    <div class="info-label">Status Asap</div>
+                    <div class="info-value" id="smokeStatus">Normal</div>
                 </div>
             </div>
+            
 
             <!-- Card Kontrol -->
             <div class="card">
@@ -199,171 +174,215 @@
     </div>
     </div>
 
-    <script>
-        // Inisialisasi Socket.IO
-        const socket = io();
-        
-        // Variabel untuk chart
-        let tempChart;
-        const maxDataPoints = 30;
-        let chartData = {
-            labels: [],
-            temp: [],
-            humidity: []
-        };
+   <script>
+    // ===============================
+    // SOCKET.IO INIT
+    // ===============================
+    const socket = io();
 
-        // Setup Chart
-        function initChart() {
-            const ctx = document.getElementById('tempChart').getContext('2d');
-            tempChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
+    // ===============================
+    // CHART VARIABLES
+    // ===============================
+    let tempChart;
+    const maxDataPoints = 30;
+
+    let chartData = {
+        labels: [],
+        temp: [],
+        smoke: []
+    };
+
+    // ===============================
+    // INIT CHART
+    // ===============================
+    function initChart() {
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        tempChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
                         label: 'Suhu (°C)',
                         data: chartData.temp,
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
                         tension: 0.4
-                    }, {
-                        label: 'Kelembaban (%)',
-                        data: chartData.humidity,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    {
+                        label: 'Asap (PPM)',
+                        data: chartData.smoke,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        tension: 0.4
                     }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
                 }
-            });
-        }
-
-        // Update Chart
-        function updateChart(temp, humidity) {
-            const now = new Date().toLocaleTimeString('id-ID');
-            
-            chartData.labels.push(now);
-            chartData.temp.push(temp);
-            chartData.humidity.push(humidity);
-            
-            if (chartData.labels.length > maxDataPoints) {
-                chartData.labels.shift();
-                chartData.temp.shift();
-                chartData.humidity.shift();
             }
-            
-            tempChart.update();
+        });
+    }
+
+    // ===============================
+    // UPDATE CHART
+    // ===============================
+    function updateChart(temp, smoke) {
+        const now = new Date().toLocaleTimeString('id-ID');
+
+        chartData.labels.push(now);
+        chartData.temp.push(temp);
+        chartData.smoke.push(smoke);
+
+        if (chartData.labels.length > maxDataPoints) {
+            chartData.labels.shift();
+            chartData.temp.shift();
+            chartData.smoke.shift();
         }
 
-        // Socket Events
-        socket.on('connect', () => {
-            document.getElementById('connectionStatus').textContent = '● Terhubung';
-            document.getElementById('connectionStatus').classList.remove('disconnected');
-        });
+        tempChart.update();
+    }
 
-        socket.on('disconnect', () => {
-            document.getElementById('connectionStatus').textContent = '● Terputus';
-            document.getElementById('connectionStatus').classList.add('disconnected');
-        });
+    // ===============================
+    // SOCKET EVENTS
+    // ===============================
+    socket.on('connect', () => {
+        const status = document.getElementById('connectionStatus');
+        status.textContent = '● Terhubung';
+        status.classList.remove('disconnected');
+        status.classList.add('connected');
+    });
 
-        socket.on('update_data', (data) => {
+    socket.on('disconnect', () => {
+        const status = document.getElementById('connectionStatus');
+        status.textContent = '● Terputus';
+        status.classList.remove('connected');
+        status.classList.add('disconnected');
+    });
+
+    socket.on('update_data', (data) => {
+        // ===============================
+        // UPDATE SENSOR DISPLAY
+        // ===============================
+        document.getElementById('temperature').textContent = data.temperature;
+        document.getElementById('smoke').textContent = data.smoke;
+
+        // ===============================
+        // STATUS BADGE
+        // ===============================
+        const statusBadge = document.getElementById('statusBadge');
+        statusBadge.textContent = data.status;
+        statusBadge.className = 'status-badge status-' + data.status.toLowerCase();
+
+        // ===============================
+        // LAST UPDATE TIME
+        // ===============================
+        document.getElementById('lastUpdate').textContent =
+            'Update terakhir: ' + new Date().toLocaleTimeString('id-ID');
+
+        // ===============================
+        // ASAP STATUS LOGIC
+        // ===============================
+        let smokeStatus = 'Normal';
+        if (data.smoke > 300) {
+            smokeStatus = 'Bahaya';
+        } else if (data.smoke > 150) {
+            smokeStatus = 'Waspada';
+        }
+
+        document.getElementById('smokeStatus').textContent = smokeStatus;
+
+        // ===============================
+        // FAN STATUS (BERDASARKAN SUHU / ASAP)
+        // ===============================
+        if (data.temperature >= 28 || data.smoke > 150) {
+            document.getElementById('fanStatus').textContent = 'Nyala';
+        } else {
+            document.getElementById('fanStatus').textContent = 'Mati';
+        }
+
+        // ===============================
+        // UPDATE CHART
+        // ===============================
+        updateChart(data.temperature, data.smoke);
+    });
+
+    // ===============================
+    // MODE TOGGLE
+    // ===============================
+    function toggleMode() {
+        const autoMode = document.getElementById('autoMode').checked;
+        document.getElementById('manualControls').style.display = autoMode ? 'none' : 'block';
+        document.getElementById('modeDisplay').textContent = autoMode ? 'Auto' : 'Manual';
+
+        fetch('/api/set_mode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ auto: autoMode })
+        });
+    }
+
+    // ===============================
+    // MANUAL FAN CONTROL
+    // ===============================
+    function toggleFan() {
+        const fanOn = document.getElementById('fanManual').checked;
+
+        fetch('/api/set_kipas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ on: fanOn })
+        });
+    }
+
+    // ===============================
+    // SET TARGET TEMPERATURE
+    // ===============================
+    function setTarget() {
+        const target = parseFloat(document.getElementById('targetInput').value);
+        document.getElementById('targetTemp').textContent = target + '°C';
+
+        fetch('/api/set_target', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: target })
+        });
+    }
+
+    // ===============================
+    // LOAD INITIAL DATA
+    // ===============================
+    async function loadData() {
+        try {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+
             document.getElementById('temperature').textContent = data.temperature;
-            document.getElementById('humidity').textContent = data.humidity;
-            
-            const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = data.status;
-            statusBadge.className = 'status-badge status-' + data.status.toLowerCase();
-            
-            document.getElementById('lastUpdate').textContent = 
-                'Update terakhir: ' + new Date().toLocaleTimeString('id-ID');
-            
-            // Update humidity status
-            const humStatus = data.humidity < 40 ? 'Kering' : 
-                            data.humidity > 70 ? 'Lembab' : 'Normal';
-            document.getElementById('humidityStatus').textContent = humStatus;
-            
-            // Update fan status
-            if (data.temperature >= 28) {
-                document.getElementById('fanStatus').textContent = 'Nyala';
-            } else {
-                document.getElementById('fanStatus').textContent = 'Mati';
-            }
-            
-            // Update chart
-            updateChart(data.temperature, data.humidity);
-        });
+            document.getElementById('smoke').textContent = data.smoke;
+            document.getElementById('targetTemp').textContent = data.target_temp + '°C';
+            document.getElementById('autoMode').checked = data.mode_auto;
+            document.getElementById('fanManual').checked = data.kipas_manual;
 
-        // Toggle Mode
-        function toggleMode() {
-            const autoMode = document.getElementById('autoMode').checked;
-            document.getElementById('manualControls').style.display = autoMode ? 'none' : 'block';
-            document.getElementById('modeDisplay').textContent = autoMode ? 'Auto' : 'Manual';
-            
-            fetch('/api/set_mode', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({auto: autoMode})
-            });
+            toggleMode();
+        } catch (error) {
+            console.error('Error loading data:', error);
         }
+    }
 
-        // Toggle Fan
-        function toggleFan() {
-            const fanOn = document.getElementById('fanManual').checked;
-            
-            fetch('/api/set_kipas', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({on: fanOn})
-            });
-        }
-
-        // Set Target Temperature
-        function setTarget() {
-            const target = parseFloat(document.getElementById('targetInput').value);
-            document.getElementById('targetTemp').textContent = target + '°C';
-            
-            fetch('/api/set_target', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({target: target})
-            });
-        }
-
-        // Load initial data
-        async function loadData() {
-            try {
-                const response = await fetch('/api/data');
-                const data = await response.json();
-                
-                document.getElementById('temperature').textContent = data.temperature;
-                document.getElementById('humidity').textContent = data.humidity;
-                document.getElementById('targetTemp').textContent = data.target_temp + '°C';
-                document.getElementById('autoMode').checked = data.mode_auto;
-                document.getElementById('fanManual').checked = data.kipas_manual;
-                
-                toggleMode();
-            } catch (error) {
-                console.error('Error loading data:', error);
-            }
-        }
-
-        // Initialize
-        window.onload = () => {
-            initChart();
-            loadData();
-        };
-    </script>
+    // ===============================
+    // INIT PAGE
+    // ===============================
+    window.onload = () => {
+        initChart();
+        loadData();
+    };
+</script>
 </body>
 </html>
