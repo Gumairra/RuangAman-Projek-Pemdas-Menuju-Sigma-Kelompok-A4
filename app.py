@@ -41,4 +41,4 @@ def get_data():
     return jsonify(data_sensor)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0000', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
