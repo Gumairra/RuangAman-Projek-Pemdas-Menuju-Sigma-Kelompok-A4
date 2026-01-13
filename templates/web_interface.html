@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RuangAman - Sistem Monitoring</title>
+
+  <!-- Socket.IO client -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+  <!-- CSS (pastikan file ini ada) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/web.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="container">
+
+  <header>
+    <h1>RuangAman</h1>
+    <p>Sistem Manajemen Suhu & Asap Ruangan</p>
+
+    <div id="connectionStatus" class="disconnected" style="margin-top:8px;">
+      ● Menghubungkan...
+    </div>
+
+    <div class="status-badge" id="statusBadge">Normal</div>
+    <div style="margin-top: 10px; color: #666;">
+      <small id="lastUpdate">Memuat data...</small>
+    </div>
+  </header>
+
+  <div class="dashboard">
+
+    <!-- Suhu -->
+    <div class="card">
+      <h2>🌡️ Suhu Ruangan</h2>
+      <div class="sensor-display">
+        <div class="sensor-value" id="temperature">--</div>
+        <div class="sensor-unit">°C</div>
+      </div>
+      <div class="info-item" style="margin-top: 15px;">
+        <div class="info-label">Target Suhu</div>
+        <div class="info-value" id="targetTemp">28°C</div>
+      </div>
+    </div>
+
+    <!-- Asap -->
+    <div class="card">
+      <h2>🔥 Asap</h2>
+      <div class="sensor-display">
+        <div class="sensor-value" id="smoke">--</div>
+        <div class="sensor-unit">PPM</div>
+      </div>
+      <div class="info-item" style="margin-top: 15px;">
+        <div class="info-label">Status Asap</div>
+        <div class="info-value" id="smokeStatus">Normal</div>
+      </div>
+    </div>
+
+    <!-- Kontrol -->
+    <div class="card">
+      <h2>⚙️ Kontrol Sistem</h2>
+
+      <div class="control-group">
+        <div class="row">
+          <span>Mode Otomatis</span>
+          <label class="switch">
+            <input type="checkbox" id="autoMode" checked onchange="toggleMode()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group" id="manualControls" style="display:none;">
+        <div class="row">
+          <span>Kipas Manual</span>
+          <label class="switch">
+            <input type="checkbox" id="fanManual" onchange="toggleFan()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="targetInput">Target Suhu (°C)</label>
+        <input type="number" id="targetInput" value="28" min="20" max="35" step="0.5">
+        <button onclick="setTarget()" style="width:100%; margin-top:10px;">Atur Target</button>
+      </div>
+
+      <div class="info-grid" style="margin-top:15px;">
+        <div class="info-item">
+          <div class="info-label">Mode</div>
+          <div class="info-value" id="modeDisplay">Auto</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Kipas</div>
+          <div class="info-value" id="fanStatus">Mati</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Grafik -->
+  <div class="card">
+    <h2>📊 Grafik Real-time</h2>
+    <div class="chart-container">
+      <canvas id="tempChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===============================
+  // SOCKET.IO INIT
+  // ===============================
+  const socket = io();
+
+  // ===============================
+  // CHART
+  // ===============================
+  let tempChart;
+  const maxDataPoints = 30;
+  const chartData = { labels: [], temp: [], smoke: [] };
+
+  function initChart() {
+    const ctx = document.getElementById("tempChart").getContext("2d");
+    tempChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            label: "Suhu (°C)",
+            data: chartData.temp,
+            borderColor: "#ef4444",
+            backgroundColor: "rgba(239,68,68,0.1)",
+            tension: 0.4
+          },
+          {
+            label: "Asap (PPM)",
+            data: chartData.smoke,
+            borderColor: "#f97316",
+            backgroundColor: "rgba(249,115,22,0.1)",
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  function updateChart(temp, smoke) {
+    const now = new Date().toLocaleTimeString("id-ID");
+    chartData.labels.push(now);
+    chartData.temp.push(temp);
+    chartData.smoke.push(smoke);
+
+    if (chartData.labels.length > maxDataPoints) {
+      chartData.labels.shift();
+      chartData.temp.shift();
+      chartData.smoke.shift();
+    }
+    tempChart.update();
+  }
+
+  // ===============================
+  // APPLY DATA TO UI (SAFE)
+  // ===============================
+  function applyData(data) {
+    const temp = Number(data.temperature ?? 0);
+    const smoke = Number(data.smoke ?? 0);
+    const status = String(data.status ?? "Normal");
+    const lastUpdate = String(data.last_update ?? "-");
+
+    const target = Number(data.target_temp ?? 28);
+    const modeAuto = Boolean(data.mode_auto ?? true);
+    const kipasManual = Boolean(data.kipas_manual ?? false);
+
+    document.getElementById("temperature").textContent = temp.toFixed(1);
+    document.getElementById("smoke").textContent = smoke;
+
+    // Badge status
+    const badge = document.getElementById("statusBadge");
+    badge.textContent = status;
+
+    document.getElementById("lastUpdate").textContent = "Update terakhir: " + lastUpdate;
+
+    document.getElementById("targetTemp").textContent = target.toFixed(1) + "°C";
+    document.getElementById("targetInput").value = target;
+
+    document.getElementById("autoMode").checked = modeAuto;
+    document.getElementById("fanManual").checked = kipasManual;
+
+    // show/hide manual control + mode text (tanpa POST)
+    toggleMode(true);
+
+    // status asap (client-side)
+    let smokeStatus = "Normal";
+    if (smoke > 300) smokeStatus = "Bahaya";
+    else if (smoke > 150) smokeStatus = "Waspada";
+    document.getElementById("smokeStatus").textContent = smokeStatus;
+
+    // fan status display (UI)
+    document.getElementById("fanStatus").textContent =
+      (temp >= target || smoke > 150) ? "Nyala" : "Mati";
+
+    updateChart(temp, smoke);
+  }
+
+  // ===============================
+  // SOCKET EVENTS
+  // ===============================
+  socket.on("connect", () => {
+    const s = document.getElementById("connectionStatus");
+    s.textContent = "● Terhubung";
+    s.className = "connected";
+  });
+
+  socket.on("disconnect", () => {
+    const s = document.getElementById("connectionStatus");
+    s.textContent = "● Terputus";
+    s.className = "disconnected";
+  });
+
+  socket.on("update_data", (data) => {
+    applyData(data);
+  });
+
+  // ===============================
+  // CONTROL FUNCTIONS
+  // ===============================
+  function toggleMode(skipPost = false) {
+    const auto = document.getElementById("autoMode").checked;
+    document.getElementById("manualControls").style.display = auto ? "none" : "block";
+    document.getElementById("modeDisplay").textContent = auto ? "Auto" : "Manual";
+
+    if (!skipPost) {
+      fetch("/api/set_mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auto: auto })
+      });
+    }
+  }
+
+  function toggleFan() {
+    const on = document.getElementById("fanManual").checked;
+    fetch("/api/set_kipas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ on: on })
+    });
+  }
+
+  function setTarget() {
+    const target = parseFloat(document.getElementById("targetInput").value);
+    fetch("/api/set_target", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ target: target })
+    });
+  }
+
+  // ===============================
+  // INIT PAGE
+  // ===============================
+  window.onload = () => {
+    initChart();
+    fetch("/api/data")
+      .then(r => r.json())
+      .then(d => applyData(d))
+      .catch(err => console.error("Error load /api/data:", err));
+  };
+</script>
+</body>
+</html>
