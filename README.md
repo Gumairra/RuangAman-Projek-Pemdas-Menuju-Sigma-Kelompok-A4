@@ -50,5 +50,6 @@ Setiap kondisi akan memicu respon sistem yang berbeda berupa LED, kipas, dan buz
 - R. Gumairra Ramnoya A (152024045)
 - Nur Hikma Missgyarti (152024098)
 - Joddy Lukmanul Hakim (152024117)
-Program Studi: Informasi
+
+Program Studi: Informatika
 Mata Kuliah: Praktikum Pemrograman Dasar
