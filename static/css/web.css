@@ -1,0 +1,705 @@
+/* ===============================
+   RuangAman - Neon Sakura Theme
+================================ */
+:root{
+  --bg: #0a0118;
+  --card: #1a0b2e;
+  --card-hover: #2d1b4e;
+  --text: #f5e6ff;
+  --muted: #c9a9e8;
+  --border: #4a2472;
+
+  --sakura: #ff6b9d;
+  --sakura-light: #ffb3d9;
+  --sakura-dark: #c73866;
+  --neon-pink: #ff0080;
+  --neon-purple: #bf00ff;
+  --neon-cyan: #00ffff;
+  --neon-blue: #0066ff;
+  --gold: #ffd700;
+
+  --shadow: 0 20px 50px rgba(191, 0, 255, 0.3);
+  --shadow-lg: 0 25px 60px rgba(255, 0, 128, 0.4);
+  --radius: 20px;
+  --glow-pink: 0 0 30px rgba(255, 0, 128, 0.6), 0 0 60px rgba(255, 0, 128, 0.3);
+  --glow-purple: 0 0 30px rgba(191, 0, 255, 0.6), 0 0 60px rgba(191, 0, 255, 0.3);
+}
+
+*{
+  box-sizing: border-box;
+}
+
+html, body{
+  height: 100%;
+}
+
+body{
+  margin: 0;
+  font-family: "Poppins","Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background: 
+    radial-gradient(circle at 20% 10%, rgba(255, 0, 128, 0.15), transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(191, 0, 255, 0.15), transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(255, 107, 157, 0.1), transparent 40%),
+    radial-gradient(circle at 90% 90%, rgba(0, 255, 255, 0.1), transparent 40%),
+    linear-gradient(135deg, #0a0118 0%, #1a0b2e 50%, #2d1b4e 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Sakura petals floating effect */
+body::before{
+  content: '🌸';
+  position: fixed;
+  font-size: 40px;
+  top: -50px;
+  left: 10%;
+  opacity: 0.3;
+  animation: fall 15s linear infinite;
+  z-index: 0;
+}
+
+body::after{
+  content: '🌸';
+  position: fixed;
+  font-size: 30px;
+  top: -50px;
+  left: 70%;
+  opacity: 0.25;
+  animation: fall 20s linear infinite 5s;
+  z-index: 0;
+}
+
+@keyframes fall {
+  0% { 
+    transform: translateY(-50px) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.3; }
+  100% { 
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.container{
+  width: min(1200px, 94%);
+  margin: 32px auto 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===============================
+   Header with neon sakura style
+================================ */
+header{
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.15) 0%, rgba(191, 0, 255, 0.15) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid;
+  border-image: linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--sakura)) 1;
+  border-radius: var(--radius);
+  padding: 28px 28px 24px;
+  box-shadow: var(--glow-pink), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-purple), var(--sakura), transparent);
+  animation: neonSlide 3s ease-in-out infinite;
+}
+
+@keyframes neonSlide {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+header h1{
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--neon-pink), var(--sakura-light), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+  text-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+  filter: drop-shadow(0 0 10px rgba(255, 0, 128, 0.5));
+}
+
+header p{
+  margin: 6px 0 12px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Koneksi socket dengan neon glow */
+.connected{
+  color: var(--neon-cyan);
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+.disconnected{
+  color: var(--neon-pink);
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+  animation: neonFlicker 1s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% { 
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+  }
+  50% { 
+    text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan), 0 0 60px var(--neon-cyan);
+  }
+}
+
+@keyframes neonFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ===============================
+   Status badge with sakura glow
+================================ */
+.status-badge{
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  border: 2px solid var(--sakura);
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.2), rgba(191, 0, 255, 0.2));
+  color: var(--sakura-light);
+  box-shadow: 0 0 20px rgba(255, 107, 157, 0.5), inset 0 0 15px rgba(255, 107, 157, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.status-badge:hover{
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 107, 157, 0.7), inset 0 0 20px rgba(255, 107, 157, 0.3);
+}
+
+.status-normal{
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 102, 255, 0.2));
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.status-bahaya{
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.3), rgba(199, 56, 102, 0.3));
+  border-color: var(--neon-pink);
+  color: var(--neon-pink);
+  box-shadow: 0 0 25px rgba(255, 0, 128, 0.7), inset 0 0 20px rgba(255, 0, 128, 0.3);
+  animation: sakuraShake 0.5s ease infinite;
+}
+
+@keyframes sakuraShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px) rotate(-1deg); }
+  75% { transform: translateX(3px) rotate(1deg); }
+}
+
+/* ===============================
+   Dashboard grid
+================================ */
+.dashboard{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+  margin-bottom: 28px;
+}
+
+/* ===============================
+   Cards with neon sakura borders
+================================ */
+.card{
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.9) 0%, rgba(45, 27, 78, 0.7) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(191, 0, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 2px;
+  background: linear-gradient(135deg, var(--neon-pink), var(--sakura), var(--neon-purple));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.card::after{
+  content: '🌸';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 30px;
+  opacity: 0.1;
+  transition: all 0.3s ease;
+}
+
+.card:hover{
+  transform: translateY(-6px);
+  box-shadow: var(--glow-pink);
+}
+
+.card:hover::before{
+  opacity: 1;
+}
+
+.card:hover::after{
+  opacity: 0.3;
+  transform: rotate(15deg) scale(1.2);
+}
+
+.card h2{
+  margin: 0 0 16px;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  font-weight: 700;
+  color: var(--sakura-light);
+  text-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+}
+
+.sensor-display{
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(191, 0, 255, 0.15));
+  border: 2px solid;
+  border-image: linear-gradient(90deg, var(--neon-pink), var(--neon-purple)) 1;
+  box-shadow: inset 0 0 20px rgba(255, 0, 128, 0.2), 0 0 20px rgba(255, 0, 128, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.sensor-display::before{
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: sakuraShimmer 3s ease-in-out infinite;
+}
+
+@keyframes sakuraShimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.sensor-value{
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  background: linear-gradient(135deg, var(--neon-pink), var(--sakura-light), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 10px rgba(255, 0, 128, 0.5));
+}
+
+.sensor-unit{
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sakura-light);
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 8px rgba(255, 107, 157, 0.5);
+}
+
+.info-item{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 107, 157, 0.3);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.05), rgba(191, 0, 255, 0.05));
+  transition: all 0.3s ease;
+}
+
+.info-item:hover{
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(191, 0, 255, 0.15));
+  transform: translateX(4px);
+  border-color: var(--sakura);
+  box-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+}
+
+.info-label{
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-value{
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--sakura-light);
+  text-shadow: 0 0 8px rgba(255, 107, 157, 0.3);
+}
+
+.info-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===============================
+   Control styles with neon accents
+================================ */
+.control-group{
+  margin-top: 16px;
+}
+
+.row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 107, 157, 0.3);
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.05), rgba(191, 0, 255, 0.05));
+  transition: all 0.3s ease;
+}
+
+.row:hover{
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(191, 0, 255, 0.1));
+  border-color: var(--sakura);
+}
+
+label{
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+input[type="number"]{
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 107, 157, 0.3);
+  background: rgba(26, 11, 46, 0.7);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input[type="number"]:focus{
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 0 4px rgba(255, 0, 128, 0.2), 0 0 30px rgba(255, 0, 128, 0.4);
+  background: rgba(26, 11, 46, 0.9);
+}
+
+button{
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  border: 2px solid var(--sakura);
+  color: white;
+  font-weight: 800;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+button::before{
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
+}
+
+button:hover{
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 0 40px rgba(255, 0, 128, 0.8), 0 0 60px rgba(191, 0, 255, 0.5);
+  border-color: var(--sakura-light);
+}
+
+button:hover::before{
+  width: 300px;
+  height: 300px;
+}
+
+button:active{
+  transform: translateY(0) scale(0.98);
+}
+
+/* ===============================
+   Switch with sakura neon glow
+================================ */
+.switch{
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 30px;
+}
+
+.switch input{
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider{
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: linear-gradient(135deg, #2d1b4e, #4a2472);
+  transition: 0.3s;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 107, 157, 0.3);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider:before{
+  position: absolute;
+  content: "🌸";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  top: 2px;
+  background: linear-gradient(135deg, #f5e6ff, #c9a9e8);
+  transition: 0.3s;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.5);
+}
+
+.switch input:checked + .slider{
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  border-color: var(--sakura-light);
+  box-shadow: 0 0 25px rgba(255, 0, 128, 0.6), inset 0 0 20px rgba(255, 0, 128, 0.3);
+}
+
+.switch input:checked + .slider:before{
+  transform: translateX(24px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 4px 12px rgba(255, 0, 128, 0.6);
+}
+
+/* ===============================
+   Chart container with sakura frame
+================================ */
+.chart-container{
+  height: 340px;
+  width: 100%;
+  border-radius: 16px;
+  border: 2px solid;
+  border-image: linear-gradient(135deg, var(--neon-pink), var(--sakura), var(--neon-purple)) 1;
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.8), rgba(45, 27, 78, 0.8));
+  backdrop-filter: blur(15px);
+  padding: 16px;
+  box-shadow: 0 0 30px rgba(255, 0, 128, 0.3), inset 0 2px 10px rgba(0, 0, 0, 0.3);
+  margin-top: 12px;
+  position: relative;
+}
+
+.chart-container::before{
+  content: '🌸';
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 40px;
+  opacity: 0.1;
+}
+
+/* ===============================
+   Footer / Team section
+================================ */
+.footer{
+  margin-top: 28px;
+  padding: 20px 0 40px;
+}
+
+.container-footer{
+  width: min(1200px, 94%);
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(26, 11, 46, 0.9) 0%, rgba(45, 27, 78, 0.7) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--glow-purple);
+  position: relative;
+}
+
+.container-footer::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 2px;
+  background: linear-gradient(135deg, var(--neon-pink), var(--sakura), var(--neon-purple));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.title{
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-pink), var(--sakura-light), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(255, 0, 128, 0.5));
+}
+
+.subtitle{
+  margin: 8px 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.team{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.name-card{
+  border: 2px solid rgba(255, 107, 157, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.08), rgba(191, 0, 255, 0.08));
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.name-card::before{
+  content: '🌸';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 20px;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.name-card:hover{
+  transform: translateY(-8px);
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(191, 0, 255, 0.2));
+  box-shadow: 0 0 30px rgba(255, 0, 128, 0.5), 0 0 60px rgba(191, 0, 255, 0.3);
+  border-color: var(--sakura);
+}
+
+.name-card:hover::before{
+  opacity: 0.3;
+  transform: rotate(15deg);
+}
+
+.avatar{
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  margin: 0 auto 12px;
+  overflow: hidden;
+  border: 3px solid var(--sakura);
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.5), 0 4px 15px rgba(191, 0, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.name-card:hover .avatar{
+  transform: scale(1.15) rotate(5deg);
+  box-shadow: 0 0 40px rgba(255, 0, 128, 0.8), 0 6px 25px rgba(191, 0, 255, 0.5);
+  border-color: var(--sakura-light);
+}
+
+.avatar img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.name-card p{
+  margin: 6px 0;
+  font-size: 13px;
+  color: var(--sakura-light);
+  font-weight: 700;
+}
+
+.name-card p:nth-child(3){
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ===============================
+   Responsive
+================================ */
+@media (max-width: 980px){
+  .dashboard{
+    grid-template-columns: 1fr;
+  }
+  .team{
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px){
+  header h1{
+    font-size: 26px;
+  }
+  .sensor-value{
+    font-size: 40px;
+  }
+  .team{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card{
+    padding: 20px;
+  }
+}
